@@ -5,48 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AP Filter Tool</title>
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-    
     body {
+      font-family: Arial, sans-serif;
       margin: 0;
       padding: 10px;
       background-color: #f5f5f5;
     }
     
     .container {
-      max-width: 100%;
-      margin: 0 auto;
       background-color: white;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       padding: 10px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
     }
     
     h1 {
       font-size: 20px;
       margin-top: 0;
-      color: #333;
-    }
-    
-    .search-container {
-      position: sticky;
-      top: 0;
-      background-color: white;
-      padding: 10px 0;
-      z-index: 100;
-      border-bottom: 1px solid #eee;
+      margin-bottom: 0;
     }
     
     .search-box {
       width: 100%;
-      padding: 10px;
-      font-size: 16px;
+      padding: 8px;
+      margin-bottom: 10px;
       border: 1px solid #ddd;
       border-radius: 4px;
-      margin-bottom: 10px;
+      font-size: 14px;
     }
     
     .filter-buttons {
@@ -60,14 +54,9 @@
       background-color: #f0f0f0;
       border: 1px solid #ddd;
       border-radius: 20px;
-      padding: 6px 12px;
-      font-size: 13px;
+      padding: 5px 10px;
+      font-size: 12px;
       cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    
-    .filter-button:hover {
-      background-color: #e0e0e0;
     }
     
     .filter-button.active {
@@ -76,176 +65,162 @@
       border-color: #007bff;
     }
     
-    .results-info {
-      margin-bottom: 10px;
-      font-size: 14px;
-      color: #666;
-    }
-    
     table {
       width: 100%;
       border-collapse: collapse;
     }
     
     th, td {
-      padding: 8px 4px;
+      padding: 6px 4px;
       text-align: left;
       border-bottom: 1px solid #ddd;
-      font-size: 14px;
+      font-size: 13px;
     }
     
     th {
       background-color: #f8f9fa;
       position: sticky;
       top: 0;
-      font-weight: bold;
-      color: #333;
-      z-index: 10;
     }
     
-    tr:hover {
-      background-color: #f5f5f5;
+    .external-button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 15px;
+      cursor: pointer;
     }
     
-    .location-filters {
-      margin-top: 5px;
-      padding-top: 5px;
-      border-top: 1px solid #eee;
+    .external-button:hover {
+      background-color: #45a049;
     }
-    .header-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
+    
+    .results-info {
+      margin: 10px 0;
+      font-size: 14px;
+      color: #666;
+    }
+    
     /* Password modal styles */
-.modal {
-  display: flex;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.7);
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  max-width: 400px;
-  width: 90%;
-}
-
-.modal-title {
-  margin-top: 0;
-  color: #333;
-}
-
-.password-input {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
-}
-
-.submit-button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 10px 15px;
-  font-size: 16px;
-  cursor: pointer;
-  width: 100%;
-}
-
-.submit-button:hover {
-  background-color: #0056b3;
-}
-
-.error-message {
-  color: #d9534f;
-  margin-top: 10px;
-  font-size: 14px;
-  display: none;
-}
-
-.app-content {
-  display: none;
-}
-
-
+    .modal {
+      display: flex;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      max-width: 400px;
+      width: 90%;
+    }
+    
+    .modal-title {
+      margin-top: 0;
+      color: #333;
+    }
+    
+    .password-input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    
+    .submit-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+    }
+    
+    .submit-button:hover {
+      background-color: #0056b3;
+    }
+    
+    .error-message {
+      color: #d9534f;
+      margin-top: 10px;
+      font-size: 14px;
+      display: none;
+    }
+    
+    .app-content {
+      display: none;
+    }
+    
+    @media (max-width: 768px) {
+      .filter-button {
+        padding: 4px 8px;
+        font-size: 11px;
+      }
+      
+      th, td {
+        padding: 5px 3px;
+        font-size: 12px;
+      }
+    }
   </style>
 </head>
 <body>
-
   <!-- Password Modal -->
-<div id="passwordModal" class="modal">
-  <div class="modal-content">
-    <h2 class="modal-title">Toegang tot AP Filter Tool</h2>
-    <p>Voer het wachtwoord in om toegang te krijgen tot de tool.</p>
-    <input type="password" id="passwordInput" class="password-input" placeholder="Wachtwoord">
-    <p id="errorMessage" class="error-message">Onjuist wachtwoord. Probeer het opnieuw.</p>
-    <button id="submitPassword" class="submit-button">Inloggen</button>
+  <div id="passwordModal" class="modal">
+    <div class="modal-content">
+      <h2 class="modal-title">Toegang tot AP Filter Tool</h2>
+      <p>Voer het wachtwoord in om toegang te krijgen tot de tool.</p>
+      <input type="password" id="passwordInput" class="password-input" placeholder="Wachtwoord">
+      <p id="errorMessage" class="error-message">Onjuist wachtwoord. Probeer het opnieuw.</p>
+      <button id="submitPassword" class="submit-button">Inloggen</button>
+    </div>
   </div>
-</div>
-<div id="appContent" class="app-content">
-  <!-- Je bestaande container div en inhoud hier -->
 
-  <div class="container">
-    <div class="header-container">
-  <h1>AP Filter Tool</h1>
-  <button class="external-button" onclick="window.open('https://eu.hamina.com/share/8c3486a8-3d7d-43eb-86d7-ffbcee13c4ad', '_blank')">Hamina</button>
-</div>
-    
-    <div class="search-container">
-      <input type="text" id="searchInput" class="search-box" placeholder="Zoek op naam, locatie, label, tag..." autofocus>
+  <!-- App Content (Hidden until password is verified) -->
+  <div id="appContent" class="app-content">
+    <div class="container">
+      <div class="header-container">
+        <h1>AP Filter Tool</h1>
+        <button class="external-button" onclick="window.open('https://eu.hamina.com/share/7b57d927-aa8c-49aa-8699-bfc0d69e350c', '_blank')">Hamina</button>
+      </div>
+      
+      <input type="text" id="searchInput" class="search-box" placeholder="Zoek op naam, locatie, label, tag...">
       
       <div class="filter-buttons">
-        <button class="filter-button" data-filter="name" data-value="AP-A">A-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-B">B-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-C">C-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-D">D-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-E">E-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-F">F-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-G">G-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-H">H-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-I">I-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-J">J-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-K">K-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-O">O-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-P">P-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-Q">Q-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-R">R-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-S">S-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-V">V-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-W">W-gebouw</button>
-        <button class="filter-button" data-filter="name" data-value="AP-PRK">Parkeer plaats</button>
-        <button class="filter-button" data-filter="name" data-value="EIB">Eibergen</button>
+        <button class="filter-button" onclick="filterByBuilding('AP-A')">A-gebouw</button>
+        <button class="filter-button" onclick="filterByBuilding('AP-B')">B-gebouw</button>
+        <button class="filter-button" onclick="filterByBuilding('AP-C')">C-gebouw</button>
+        <button class="filter-button" onclick="filterByBuilding('AP-D')">D-gebouw</button>
+        <button class="filter-button" onclick="filterByBuilding('AP-E')">E-gebouw</button>
+        <button class="filter-button" onclick="filterByBuilding('AP-F')">F-gebouw</button>
+        <button class="filter-button" onclick="filterByLocation('Winterswijk')">Winterswijk</button>
+        <button class="filter-button" onclick="filterByLocation('Eibergen')">Eibergen</button>
+        <button class="filter-button" onclick="filterByLocation('Ruurlo')">Ruurlo</button>
+        <button class="filter-button" onclick="filterByLocation('Neede')">Neede</button>
+        <button class="filter-button" onclick="filterByLocation('Aalten')">Aalten</button>
+        <button class="filter-button" onclick="resetFilters()">Alles</button>
       </div>
-
-      <div class="filter-buttons location-filters">
-        <button class="filter-button" data-filter="location" data-value="Winterswijk">Winterswijk</button>
-        <button class="filter-button" data-filter="location" data-value="Eibergen">Eibergen</button>
-        <button class="filter-button" data-filter="location" data-value="Ruurlo">Ruurlo</button>
-        <button class="filter-button" data-filter="location" data-value="onbekend">Leeg</button>
-      </div>
-    </div>
-    
-    <div class="results-info" id="resultsInfo">Toont alle access points</div>
-    
-    <div style="overflow-x: auto;">
-      <table id="apTable">
+      
+      <div class="results-info" id="resultsInfo">Toont alle access points</div>
+      
+      <table>
         <thead>
           <tr>
-            <th>Bestaande-naam</th>
+            <th>Naam</th>
             <th>Plaats</th>
             <th>Label-AP</th>
             <th>TAG</th>
@@ -253,6 +228,7 @@
           </tr>
         </thead>
         <tbody id="tableBody">
+          <!-- Data wordt hier ingevuld -->
         </tbody>
       </table>
     </div>
@@ -260,54 +236,54 @@
 
   <script>
     // Wachtwoord verificatie
-const correctPassword = "SKBncubed2025";
-const passwordModal = document.getElementById("passwordModal");
-const appContent = document.getElementById("appContent");
-const passwordInput = document.getElementById("passwordInput");
-const submitButton = document.getElementById("submitPassword");
-const errorMessage = document.getElementById("errorMessage");
-
-// Check of wachtwoord al eerder is geverifieerd in deze sessie
-function checkStoredAuth() {
-  const isAuthenticated = sessionStorage.getItem("apToolAuthenticated");
-  if (isAuthenticated === "true") {
-    passwordModal.style.display = "none";
-    appContent.style.display = "block";
-    initializeApp();
-  }
-}
-
-// Controleer wachtwoord bij laden
-checkStoredAuth();
-
-// Wachtwoord submit handler
-submitButton.addEventListener("click", verifyPassword);
-passwordInput.addEventListener("keypress", function(event) {
-  if (event.key === "Enter") {
-    verifyPassword();
-  }
-});
-
-function verifyPassword() {
-  const enteredPassword = passwordInput.value;
-  
-  if (enteredPassword === correctPassword) {
-    // Wachtwoord correct
-    passwordModal.style.display = "none";
-    appContent.style.display = "block";
-    sessionStorage.setItem("apToolAuthenticated", "true");
-    initializeApp();
-  } else {
-    // Wachtwoord onjuist
-    errorMessage.style.display = "block";
-    passwordInput.value = "";
-    passwordInput.focus();
-  }
-}
-
-
-    const apData = [
-  ["AP-RUURLO-1", "Ruurlo", "AP-00-001", "NLSKB-AP-PP", "-"],
+    const correctPassword = "SKBncubed2025";
+    const passwordModal = document.getElementById("passwordModal");
+    const appContent = document.getElementById("appContent");
+    const passwordInput = document.getElementById("passwordInput");
+    const submitButton = document.getElementById("submitPassword");
+    const errorMessage = document.getElementById("errorMessage");
+    
+    // Check of wachtwoord al eerder is geverifieerd in deze sessie
+    function checkStoredAuth() {
+      const isAuthenticated = sessionStorage.getItem("apToolAuthenticated");
+      if (isAuthenticated === "true") {
+        passwordModal.style.display = "none";
+        appContent.style.display = "block";
+        initializeApp();
+      }
+    }
+    
+    // Controleer wachtwoord bij laden
+    checkStoredAuth();
+    
+    // Wachtwoord submit handler
+    submitButton.addEventListener("click", verifyPassword);
+    passwordInput.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        verifyPassword();
+      }
+    });
+    
+    function verifyPassword() {
+      const enteredPassword = passwordInput.value;
+      
+      if (enteredPassword === correctPassword) {
+        // Wachtwoord correct
+        passwordModal.style.display = "none";
+        appContent.style.display = "block";
+        sessionStorage.setItem("apToolAuthenticated", "true");
+        initializeApp();
+      } else {
+        // Wachtwoord onjuist
+        errorMessage.style.display = "block";
+        passwordInput.value = "";
+        passwordInput.focus();
+      }
+    }
+    
+    // AP data
+    var apData = [
+       ["AP-RUURLO-1", "Ruurlo", "AP-00-001", "NLSKB-AP-PP", "-"],
   ["RAP01", "onbekend", "AP-00-001", "NLSKB-AP-GROUP", "-"],
   ["AP-PRK-1", "Winterswijk", "AP-00-429", "NLSKB-AP-PP", "-"],
   ["AP-PRK-2", "Winterswijk", "AP-00-430", "NLSKB-AP-PP", "-"],
@@ -768,107 +744,115 @@ function verifyPassword() {
 ["RAP-TD-1", "onbekend", "AP-00-001", "", "-"],
 ["RAP-ZGT-1", "onbekend", "AP-00-001", "", "-"],
 ["RAP-Ruurlo-3", "Ruurlo", "AP-00-002", "", "-"]
-
-];
-   // Initialiseer de app nadat het wachtwoord is geverifieerd
-function initializeApp() {
-  fillTable(apData);
-  // Voeg hier andere initialisatiecode toe, zoals event listeners voor zoekveld
-}
- 
-    // Wacht tot het document volledig is geladen
-    document.addEventListener('DOMContentLoaded', function() {
-      // Functie om tabel te vullen
-      function populateTable(data) {
-        const tableBody = document.getElementById('tableBody');
-        
-        // Maak de tabel leeg
-        tableBody.innerHTML = '';
-        
-        // Voeg alle rijen toe aan de tabel
-        data.forEach(row => {
-          const tr = document.createElement('tr');
-          
-          row.forEach(cell => {
-            const td = document.createElement('td');
-            td.textContent = cell;
-            tr.appendChild(td);
-          });
-          
-          tableBody.appendChild(tr);
-        });
-        
-        document.getElementById('resultsInfo').textContent = `Toont ${data.length} access points`;
+    ];
+    
+    // Functie om tabel te vullen
+    function fillTable(data) {
+      var tableBody = document.getElementById("tableBody");
+      var html = "";
+      
+      for (var i = 0; i < data.length; i++) {
+        html += "<tr>";
+        for (var j = 0; j < data[i].length; j++) {
+          html += "<td>" + (data[i][j] || "-") + "</td>";
+        }
+        html += "</tr>";
       }
       
-      // Functie om te filteren op zoekterm
-      function filterBySearch(searchTerm) {
+      tableBody.innerHTML = html;
+      document.getElementById("resultsInfo").textContent = "Toont " + data.length + " access points";
+    }
+    
+    // Filter op gebouw
+    function filterByBuilding(prefix) {
+      resetActiveButtons();
+      event.currentTarget.classList.add("active");
+      
+      var filtered = [];
+      for (var i = 0; i < apData.length; i++) {
+        if (apData[i][0].startsWith(prefix)) {
+          filtered.push(apData[i]);
+        }
+      }
+      
+      fillTable(filtered);
+      document.getElementById("searchInput").value = "";
+    }
+    
+    // Filter op locatie
+    function filterByLocation(location) {
+      resetActiveButtons();
+      event.currentTarget.classList.add("active");
+      
+      var filtered = [];
+      for (var i = 0; i < apData.length; i++) {
+        if (apData[i][1] === location) {
+          filtered.push(apData[i]);
+        }
+      }
+      
+      fillTable(filtered);
+      document.getElementById("searchInput").value = "";
+    }
+    
+    // Reset filters
+    function resetFilters() {
+      resetActiveButtons();
+      document.getElementById("searchInput").value = "";
+      fillTable(apData);
+    }
+    
+    // Reset active buttons
+    function resetActiveButtons() {
+      var buttons = document.getElementsByClassName("filter-button");
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].classList.remove("active");
+      }
+    }
+    
+    // Zoekfunctie
+    function setupSearchFunction() {
+      document.getElementById("searchInput").addEventListener("input", function() {
+        var searchTerm = this.value.toLowerCase();
+        
         if (!searchTerm) {
-          return apData;
+          fillTable(apData);
+          resetActiveButtons();
+          return;
         }
         
-        searchTerm = searchTerm.toLowerCase();
-        return apData.filter(row => {
-          return row.some(cell => cell.toLowerCase().includes(searchTerm));
-        });
-      }
-      
-      // Algemene filterfunctie
-      function filterData(filterType, filterValue) {
-        if (!filterValue) {
-          return apData;
-        }
-        
-        switch (filterType) {
-          case 'name':
-            return apData.filter(row => row[0].startsWith(filterValue));
-          case 'location':
-            return apData.filter(row => row[1] === filterValue);
-          default:
-            return apData;
-        }
-      }
-      
-      // Event listeners
-      document.getElementById('searchInput').addEventListener('input', function(e) {
-        const searchTerm = e.target.value;
-        const filteredData = filterBySearch(searchTerm);
-        populateTable(filteredData);
-        
-        // Reset active buttons als we zoeken
-        document.querySelectorAll('.filter-button').forEach(btn => {
-          btn.classList.remove('active');
-        });
-      });
-      
-      document.querySelectorAll('.filter-button').forEach(button => {
-        button.addEventListener('click', function() {
-          const filterType = this.getAttribute('data-filter');
-          const filterValue = this.getAttribute('data-value');
+        var filtered = [];
+        for (var i = 0; i < apData.length; i++) {
+          var row = apData[i];
+          var match = false;
           
-          // Toggle active state
-          if (this.classList.contains('active')) {
-            this.classList.remove('active');
-            populateTable(apData);
-            document.getElementById('searchInput').value = '';
-          } else {
-            // Reset andere buttons
-            document.querySelectorAll('.filter-button').forEach(btn => {
-              btn.classList.remove('active');
-            });
-            
-            this.classList.add('active');
-            
-            const filteredData = filterData(filterType, filterValue);
-            populateTable(filteredData);
-            document.getElementById('searchInput').value = '';
+          for (var j = 0; j < row.length; j++) {
+            var cell = row[j] || "";
+            if (cell.toLowerCase().indexOf(searchTerm) !== -1) {
+              match = true;
+              break;
+            }
           }
-        });
+          
+          if (match) {
+            filtered.push(row);
+          }
+        }
+        
+        fillTable(filtered);
+        resetActiveButtons();
       });
-      
-      // Initialiseer tabel
-      populateTable(apData);
-    });
+    }
+    
+    // Initialiseer de app nadat het wachtwoord is geverifieerd
+    function initializeApp() {
+      fillTable(apData);
+      setupSearchFunction();
+    }
   </script>
 </body>
 </html>
+
+
+
+    
