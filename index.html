@@ -1,1 +1,746 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AP Filter Tool</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+    
+    body {
+      margin: 0;
+      padding: 10px;
+      background-color: #f5f5f5;
+    }
+    
+    .container {
+      max-width: 100%;
+      margin: 0 auto;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding: 10px;
+    }
+    
+    h1 {
+      font-size: 20px;
+      margin-top: 0;
+      color: #333;
+    }
+    
+    .search-container {
+      position: sticky;
+      top: 0;
+      background-color: white;
+      padding: 10px 0;
+      z-index: 100;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .search-box {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    
+    .filter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+    
+    .filter-button {
+      background-color: #f0f0f0;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .filter-button:hover {
+      background-color: #e0e0e0;
+    }
+    
+    .filter-button.active {
+      background-color: #007bff;
+      color: white;
+      border-color: #007bff;
+    }
+    
+    .results-info {
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #666;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th, td {
+      padding: 8px 4px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+      font-size: 14px;
+    }
+    
+    th {
+      background-color: #f8f9fa;
+      position: sticky;
+      top: 0;
+      font-weight: bold;
+      color: #333;
+      z-index: 10;
+    }
+    
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+    
+    .location-filters {
+      margin-top: 5px;
+      padding-top: 5px;
+      border-top: 1px solid #eee;
+    }
+    .header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
 
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-container">
+  <h1>AP Filter Tool</h1>
+  <button class="external-button" onclick="window.open('https://eu.hamina.com/share/7b57d927-aa8c-49aa-8699-bfc0d69e350c', '_blank')">Hamina</button>
+</div>
+    
+    <div class="search-container">
+      <input type="text" id="searchInput" class="search-box" placeholder="Zoek op naam, locatie, label, tag..." autofocus>
+      
+      <div class="filter-buttons">
+        <button class="filter-button" data-filter="name" data-value="AP-A">A-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-B">B-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-C">C-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-D">D-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-E">E-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-F">F-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-G">G-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-H">H-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-I">I-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-J">J-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-K">K-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-O">O-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-P">P-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-Q">Q-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-R">R-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-S">S-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-V">V-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-W">W-gebouw</button>
+        <button class="filter-button" data-filter="name" data-value="AP-PRK">Parkeer plaats</button>
+        <button class="filter-button" data-filter="name" data-value="EIB">Eibergen</button>
+      </div>
+
+      <div class="filter-buttons location-filters">
+        <button class="filter-button" data-filter="location" data-value="Winterswijk">Winterswijk</button>
+        <button class="filter-button" data-filter="location" data-value="Eibergen">Eibergen</button>
+        <button class="filter-button" data-filter="location" data-value="Ruurlo">Ruurlo</button>
+        <button class="filter-button" data-filter="location" data-value="onbekend">Leeg</button>
+      </div>
+    </div>
+    
+    <div class="results-info" id="resultsInfo">Toont alle access points</div>
+    
+    <div style="overflow-x: auto;">
+      <table id="apTable">
+        <thead>
+          <tr>
+            <th>Bestaande-naam</th>
+            <th>Plaats</th>
+            <th>Label-AP</th>
+            <th>TAG</th>
+            <th>Opmerking</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+
+    const apData = [
+  ["AP-RUURLO-1", "Ruurlo", "AP-00-001", "NLSKB-AP-PP", "-"],
+  ["RAP01", "onbekend", "AP-00-001", "NLSKB-AP-GROUP", "-"],
+  ["AP-PRK-1", "Winterswijk", "AP-00-429", "NLSKB-AP-PP", "-"],
+  ["AP-PRK-2", "Winterswijk", "AP-00-430", "NLSKB-AP-PP", "-"],
+  ["AP-PRK-3", "Winterswijk", "AP-00-431", "NLSKB-AP-PP", "-"],
+  ["AP-PRK-4", "Winterswijk", "AP-00-432", "NLSKB-AP-PP", "-"],
+  ["AP-PRK-5", "Winterswijk", "AP-00-433", "NLSKB-AP-PP", "-"],
+  ["EIB-1", "Eibergen", "AP-01-001", "NLSKB-AP-GROUP", "-"],
+  ["EIB-2", "Eibergen", "AP-01-002", "NLSKB-AP-GROUP", "-"],
+  ["EIB-3", "Eibergen", "AP-01-003", "NLSKB-AP-GROUP", "-"],
+  ["EIB-4", "Eibergen", "AP-01-004", "NLSKB-AP-GROUP", "-"],
+  ["EIB-5", "Eibergen", "AP-01-005", "NLSKB-AP-GROUP", "-"],
+  ["AP-A0-390", "Winterswijk", "AP-A0-001", "NLSKB-AP-GROUP", "-"],
+  ["AP-A0-391", "Winterswijk", "AP-A0-002", "NLSKB-AP-GROUP", "-"],
+  ["AP-A0-481", "Winterswijk", "AP-A0-003", "NLSKB-AP-GROUP", "-"],
+  ["AP-A0-484", "Winterswijk", "AP-A0-004", "NLSKB-AP-GROUP", "-"],
+  ["AP-B0-392", "Winterswijk", "AP-B0-005", "NLSKB-AP-GROUP", "-"],
+  ["AP-B0-393", "Winterswijk", "AP-B0-006", "NLSKB-AP-GROUP", "-"],
+  ["AP-B0-394", "Winterswijk", "AP-B0-007", "NLSKB-AP-GROUP", "-"],
+  ["AP-B0-395", "Winterswijk", "AP-B0-008", "NLSKB-AP-GROUP", "-"],
+  ["AP-B0-396", "Winterswijk", "AP-B0-009", "NLSKB-AP-GROUP", "-"],
+  ["AP-B0-489", "Winterswijk", "AP-B0-010", "NLSKB-AP-GROUP", "-"],
+  ["AP-B1-433", "Winterswijk", "AP-B1-011", "NLSKB-AP-GROUP", "-"],
+  ["AP-C0-342", "Winterswijk", "AP-C0-012", "NLSKB-AP-GROUP", "-"],
+  ["AP-C0-397", "Winterswijk", "AP-C0-013", "NLSKB-AP-GROUP", "-"],
+  ["AP-C0-600", "Winterswijk", "AP-C0-014", "NLSKB-AP-GROUP", "-"],
+  ["AP-C0-601", "Winterswijk", "AP-C0-015", "NLSKB-AP-GROUP", "-"],
+  ["AP-C0-602", "Winterswijk", "AP-C0-016", "NLSKB-AP-GROUP", "-"],
+  ["AP-C0-603", "Winterswijk", "AP-C0-017", "NLSKB-AP-GROUP", "-"],
+  ["AP-D0-345", "Winterswijk", "AP-D0-018", "NLSKB-AP-GROUP", "-"],
+  ["AP-D0-400", "Winterswijk", "AP-D0-019", "NLSKB-AP-GROUP", "-"],
+  ["AP-D0-401", "Winterswijk", "AP-D0-020", "NLSKB-AP-GROUP", "-"],
+  ["AP-D0-402", "Winterswijk", "AP-D0-021", "NLSKB-AP-GROUP", "-"],
+  ["AP-D0-604", "Winterswijk", "AP-D0-022", "NLSKB-AP-GROUP", "-"],
+  ["AP-D0-605", "Winterswijk", "AP-D0-023", "NLSKB-AP-GROUP", "-"],
+  ["AP-E0-403", "Winterswijk", "AP-E0-024", "NLSKB-AP-GROUP", "-"],
+  ["AP-E0-404", "Winterswijk", "AP-E0-025", "NLSKB-AP-GROUP", "-"],
+  ["AP-E0-405", "Winterswijk", "AP-E0-026", "NLSKB-AP-GROUP", "-"],
+  ["AP-E0-470", "Winterswijk", "AP-E0-027", "NLSKB-AP-GROUP", "-"],
+  ["AP-E0-471", "Winterswijk", "AP-E0-028", "NLSKB-AP-GROUP", "-"],
+  ["AP-E0-472", "Winterswijk", "AP-E0-029", "NLSKB-AP-GROUP", "-"],
+  ["AP-E1-350", "Winterswijk", "AP-E1-030", "NLSKB-AP-GROUP", "-"],
+  ["AP-E1-352", "Winterswijk", "AP-E1-031", "NLSKB-AP-GROUP", "-"],
+  ["AP-E1-353", "Winterswijk", "AP-E1-032", "NLSKB-AP-GROUP", "-"],
+  ["AP-E1-354", "Winterswijk", "AP-E1-033", "NLSKB-AP-GROUP", "-"],
+  ["AP-F0-297", "Winterswijk", "AP-F0-034", "NLSKB-AP-GROUP", "-"],
+  ["AP-F0-298", "Winterswijk", "AP-F0-035", "NLSKB-AP-GROUP", "-"],
+  ["AP-F0-299", "Winterswijk", "AP-F0-036", "NLSKB-AP-GROUP", "-"],
+  ["AP-F0-300", "Winterswijk", "AP-F0-037", "NLSKB-AP-BD-F", "-"],
+  ["AP-F0-301", "Winterswijk", "AP-F0-038", "NLSKB-AP-GROUP", "-"],
+  ["AP-F0-302", "Winterswijk", "AP-F0-039", "NLSKB-AP-GROUP", "-"],
+  ["AP-F0-303", "Winterswijk", "AP-F0-040", "NLSKB-AP-GROUP", "-"],
+  ["AP-F0-304", "Winterswijk", "AP-F0-041", "NLSKB-AP-GROUP", "-"],
+  ["AP-F0-305", "Winterswijk", "AP-F0-042", "NLSKB-AP-GROUP", "-"],
+  ["AP-F0-306", "Winterswijk", "AP-F0-043", "NLSKB-AP-GROUP", "-"],
+  ["AP-F0-307", "Winterswijk", "AP-F0-044", "NLSKB-AP-GROUP", "-"],
+  ["AP-F0-308", "Winterswijk", "AP-F0-045", "NLSKB-AP-GROUP", "-"],
+  ["AP-F0-309", "Winterswijk", "AP-F0-046", "NLSKB-AP-BD-F", "-"],
+  ["AP-F0-310", "Winterswijk", "AP-F0-047", "NLSKB-AP-GROUP", "-"],
+  ["AP-F1-311", "Winterswijk", "AP-F1-048", "NLSKB-AP-GROUP", "-"],
+  ["AP-F1-312", "Winterswijk", "AP-F1-049", "NLSKB-AP-GROUP", "-"],
+  ["AP-F1-314", "Winterswijk", "AP-F1-050", "NLSKB-AP-GROUP", "-"],
+  ["AP-F1-315", "Winterswijk", "AP-F1-051", "NLSKB-AP-GROUP", "-"],
+  ["AP-F1-316", "Winterswijk", "AP-F1-052", "NLSKB-AP-GROUP", "-"],
+  ["AP-F1-317", "Winterswijk", "AP-F1-053", "NLSKB-AP-GROUP", "-"],
+  ["AP-F1-318", "Winterswijk", "AP-F1-054", "NLSKB-AP-GROUP", "-"],
+  ["AP-F1-319", "Winterswijk", "AP-F1-055", "NLSKB-AP-GROUP", "-"],
+  ["AP-F1-320", "Winterswijk", "AP-F1-056", "NLSKB-AP-GROUP", "-"],
+  ["AP-F1-321", "Winterswijk", "AP-F1-057", "NLSKB-AP-GROUP", "-"],
+  ["AP-F1-322", "Winterswijk", "AP-F1-058", "NLSKB-AP-GROUP", "-"],
+  ["AP-F1-323", "Winterswijk", "AP-F1-059", "NLSKB-AP-GROUP", "-"],
+  ["AP-F1-485", "Winterswijk", "AP-F1-060", "NLSKB-AP-GROUP", "-"],
+  ["AP-G0-001", "Winterswijk", "AP-G0-061", "NLSKB-AP-GROUP", "-"],
+  ["AP-G0-002", "Winterswijk", "AP-G0-062", "NLSKB-AP-GROUP", "-"],
+  ["AP-G0-003", "Winterswijk", "AP-G0-063", "NLSKB-AP-GROUP", "-"],
+  ["AP-G0-004", "Winterswijk", "AP-G0-064", "NLSKB-AP-GROUP", "-"],
+  ["AP-G0-005", "Winterswijk", "AP-G0-065", "NLSKB-AP-GROUP", "-"],
+  ["AP-G0-006", "Winterswijk", "AP-G0-066", "NLSKB-AP-GROUP", "-"],
+  ["AP-G0-007", "Winterswijk", "AP-G0-067", "NLSKB-AP-GROUP", "-"],
+  ["AP-G0-008", "Winterswijk", "AP-G0-068", "NLSKB-AP-GROUP", "-"],
+  ["AP-G0-009", "Winterswijk", "AP-G0-069", "NLSKB-AP-GROUP", "-"],
+  ["AP-G0-010", "Winterswijk", "AP-G0-070", "NLSKB-AP-GROUP", "-"],
+  ["AP-G0-011", "Winterswijk", "AP-G0-071", "NLSKB-AP-GROUP", "-"],
+  ["AP-G0-012", "Winterswijk", "AP-G0-072", "NLSKB-AP-GROUP", "-"],
+  ["AP-G0-013", "Winterswijk", "AP-G0-073", "NLSKB-AP-GROUP", "-"],
+  ["AP-G0-014", "Winterswijk", "AP-G0-074", "NLSKB-AP-BD-G", "-"],
+  ["AP-G0-015", "Winterswijk", "AP-G0-075", "NLSKB-AP-GROUP", "-"],
+  ["AP-G0-016", "Winterswijk", "AP-G0-076", "NLSKB-AP-GROUP", "-"],
+  ["AP-G0-017", "Winterswijk", "AP-G0-077", "NLSKB-AP-BD-G", "-"],
+  ["AP-G1-286", "Winterswijk", "AP-G1-078", "NLSKB-AP-GROUP", "-"],
+  ["AP-G1-287", "Winterswijk", "AP-G1-079", "NLSKB-AP-GROUP", "-"],
+  ["AP-G1-288", "Winterswijk", "AP-G1-080", "NLSKB-AP-GROUP", "-"],
+  ["AP-G1-289", "Winterswijk", "AP-G1-081", "NLSKB-AP-GROUP", "-"],
+  ["AP-G1-290", "Winterswijk", "AP-G1-082", "NLSKB-AP-GROUP", "-"],
+  ["AP-G1-291", "Winterswijk", "AP-G1-083", "NLSKB-AP-GROUP", "-"],
+  ["AP-G1-292", "Winterswijk", "AP-G1-084", "NLSKB-AP-GROUP", "-"],
+  ["AP-G1-293", "Winterswijk", "AP-G1-085", "NLSKB-AP-GROUP", "-"],
+  ["AP-G1-294", "Winterswijk", "AP-G1-086", "NLSKB-AP-GROUP", "-"],
+  ["AP-G1-295", "Winterswijk", "AP-G1-087", "NLSKB-AP-GROUP", "-"],
+  ["AP-G1-296", "Winterswijk", "AP-G1-088", "NLSKB-AP-GROUP", "-"],
+  ["AP-H0-049", "Winterswijk", "AP-H0-089", "NLSKB-AP-GROUP", "-"],
+  ["AP-H0-050", "Winterswijk", "AP-H0-090", "NLSKB-AP-GROUP", "-"],
+  ["AP-H0-051", "Winterswijk", "AP-H0-091", "NLSKB-AP-GROUP", "-"],
+  ["AP-H0-052", "Winterswijk", "AP-H0-092", "NLSKB-AP-GROUP", "-"],
+  ["AP-H0-053", "Winterswijk", "AP-H0-093", "NLSKB-AP-GROUP", "-"],
+  ["AP-H0-054", "Winterswijk", "AP-H0-094", "NLSKB-AP-GROUP", "-"],
+  ["AP-H0-055", "Winterswijk", "AP-H0-095", "NLSKB-AP-GROUP", "-"],
+  ["AP-H0-056", "Winterswijk", "AP-H0-096", "NLSKB-AP-GROUP", "-"],
+  ["AP-H0-378", "Winterswijk", "AP-H0-097", "NLSKB-AP-GROUP", "-"],
+  ["AP-H1-017", "Winterswijk", "AP-H1-098", "NLSKB-AP-GROUP", "-"],
+  ["AP-H1-018", "Winterswijk", "AP-H1-099", "NLSKB-AP-GROUP", "-"],
+  ["AP-H1-019", "Winterswijk", "AP-H1-100", "NLSKB-AP-GROUP", "-"],
+  ["AP-H1-020", "Winterswijk", "AP-H1-101", "NLSKB-AP-GROUP", "-"],
+  ["AP-H1-021", "Winterswijk", "AP-H1-102", "NLSKB-AP-GROUP", "-"],
+  ["AP-H1-022", "Winterswijk", "AP-H1-103", "NLSKB-AP-GROUP", "-"],
+  ["AP-H1-023", "Winterswijk", "AP-H1-104", "NLSKB-AP-GROUP", "-"],
+  ["AP-H1-024", "Winterswijk", "AP-H1-105", "NLSKB-AP-GROUP", "-"],
+  ["AP-H1-025", "Winterswijk", "AP-H1-106", "NLSKB-AP-GROUP", "-"],
+  ["AP-H2-246", "Winterswijk", "AP-H2-107", "NLSKB-AP-GROUP", "-"],
+  ["AP-H2-247", "Winterswijk", "AP-H2-108", "NLSKB-AP-GROUP", "-"],
+  ["AP-H2-248", "Winterswijk", "AP-H2-109", "NLSKB-AP-GROUP", "-"],
+  ["AP-H2-249", "Winterswijk", "AP-H2-110", "NLSKB-AP-GROUP", "-"],
+  ["AP-H2-250", "Winterswijk", "AP-H2-111", "NLSKB-AP-GROUP", "-"],
+  ["AP-H2-251", "Winterswijk", "AP-H2-112", "NLSKB-AP-GROUP", "-"],
+  ["AP-H2-252", "Winterswijk", "AP-H2-113", "NLSKB-AP-GROUP", "-"],
+  ["AP-H2-253", "Winterswijk", "AP-H2-114", "NLSKB-AP-GROUP", "-"],
+  ["AP-H2-254", "Winterswijk", "AP-H2-115", "NLSKB-AP-GROUP", "-"],
+  ["AP-H2-255", "Winterswijk", "AP-H2-116", "NLSKB-AP-GROUP", "-"],
+  ["AP-H2-256", "Winterswijk", "AP-H2-117", "NLSKB-AP-GROUP", "-"],
+  ["AP-H2-257", "Winterswijk", "AP-H2-118", "NLSKB-AP-GROUP", "-"],
+  ["AP-H2-258", "Winterswijk", "AP-H2-119", "NLSKB-AP-GROUP", "-"],
+  ["AP-H2-469", "Winterswijk", "AP-H2-120", "NLSKB-AP-GROUP", "-"],
+  ["AP-I0-123", "Winterswijk", "AP-I0-121", "NLSKB-AP-GROUP", "-"],
+  ["AP-I0-124", "Winterswijk", "AP-I0-122", "NLSKB-AP-GROUP", "-"],
+  ["AP-I0-125", "Winterswijk", "AP-I0-123", "NLSKB-AP-GROUP", "-"],
+  ["AP-I0-126", "Winterswijk", "AP-I0-124", "NLSKB-AP-GROUP", "-"],
+  ["AP-I0-366", "Winterswijk", "AP-I0-125", "NLSKB-AP-GROUP", "-"],
+  ["AP-I0-367", "Winterswijk", "AP-I0-126", "NLSKB-AP-GROUP", "-"],
+  ["AP-I0-368", "Winterswijk", "AP-I0-127", "NLSKB-AP-GROUP", "-"],
+  ["AP-I0-369", "Winterswijk", "AP-I0-128", "NLSKB-AP-GROUP", "-"],
+  ["AP-I0-370", "Winterswijk", "AP-I0-129", "NLSKB-AP-GROUP", "-"],
+  ["AP-I0-371", "Winterswijk", "AP-I0-130", "NLSKB-AP-GROUP", "-"],
+  ["AP-I0-373", "Winterswijk", "AP-I0-131", "NLSKB-AP-GROUP", "-"],
+  ["AP-I0-374", "Winterswijk", "AP-I0-132", "NLSKB-AP-GROUP", "-"],
+  ["AP-I1-026", "Winterswijk", "AP-I1-133", "NLSKB-AP-GROUP", "-"],
+  ["AP-I1-027", "Winterswijk", "AP-I1-134", "NLSKB-AP-GROUP", "-"],
+  ["AP-I1-028", "Winterswijk", "AP-I1-135", "NLSKB-AP-GROUP", "-"],
+  ["AP-I1-029", "Winterswijk", "AP-I1-136", "NLSKB-AP-GROUP", "-"],
+  ["AP-I1-031", "Winterswijk", "AP-I1-137", "NLSKB-AP-GROUP", "-"],
+  ["AP-I1-032", "Winterswijk", "AP-I1-138", "NLSKB-AP-GROUP", "-"],
+  ["AP-I1-033", "Winterswijk", "AP-I1-139", "NLSKB-AP-GROUP", "-"],
+  ["AP-I1-034", "Winterswijk", "AP-I1-140", "NLSKB-AP-GROUP", "-"],
+  ["AP-I1-035", "Winterswijk", "AP-I1-141", "NLSKB-AP-GROUP", "-"],
+  ["AP-I1-377", "Winterswijk", "AP-I1-142", "NLSKB-AP-GROUP", "-"],
+  ["AP-I2-059", "Winterswijk", "AP-I2-143", "NLSKB-AP-GROUP", "-"],
+  ["AP-I2-060", "Winterswijk", "AP-I2-144", "NLSKB-AP-GROUP", "-"],
+  ["AP-I2-061", "Winterswijk", "AP-I2-145", "NLSKB-AP-GROUP", "-"],
+  ["AP-I2-062", "Winterswijk", "AP-I2-146", "NLSKB-AP-GROUP", "-"],
+  ["AP-I2-063", "Winterswijk", "AP-I2-147", "NLSKB-AP-GROUP", "-"],
+  ["AP-I2-064", "Winterswijk", "AP-I2-148", "NLSKB-AP-GROUP", "-"],
+  ["AP-I2-065", "Winterswijk", "AP-I2-149", "NLSKB-AP-GROUP", "-"],
+  ["AP-I2-066", "Winterswijk", "AP-I2-150", "NLSKB-AP-GROUP", "-"],
+  ["AP-I2-449", "Winterswijk", "AP-I2-151", "NLSKB-AP-GROUP", "-"],
+  ["AP-I2-450", "Winterswijk", "AP-I2-152", "NLSKB-AP-GROUP", "-"],
+  ["AP-J0-127", "Winterswijk", "AP-J0-153", "NLSKB-AP-GROUP", "-"],
+  ["AP-J0-129", "Winterswijk", "AP-J0-154", "NLSKB-AP-GROUP", "-"],
+  ["AP-J0-130", "Winterswijk", "AP-J0-155", "NLSKB-AP-GROUP", "-"],
+  ["AP-J0-131", "Winterswijk", "AP-J0-156", "NLSKB-AP-GROUP", "-"],
+  ["AP-J0-132", "Winterswijk", "AP-J0-157", "NLSKB-AP-GROUP", "-"],
+  ["AP-J0-133", "Winterswijk", "AP-J0-158", "NLSKB-AP-GROUP", "-"],
+  ["AP-J0-134", "Winterswijk", "AP-J0-159", "NLSKB-AP-GROUP", "-"],
+  ["AP-J0-135", "Winterswijk", "AP-J0-160", "NLSKB-AP-GROUP", "-"],
+  ["AP-J0-136", "Winterswijk", "AP-J0-161", "NLSKB-AP-GROUP", "-"],
+  ["AP-J0-137", "Winterswijk", "AP-J0-162", "NLSKB-AP-GROUP", "-"],
+  ["AP-J0-138", "Winterswijk", "AP-J0-163", "NLSKB-AP-GROUP", "-"],
+  ["AP-J0-446", "Winterswijk", "AP-J0-164", "NLSKB-AP-GROUP", "-"],
+  ["AP-J1-036", "Winterswijk", "AP-J1-165", "NLSKB-AP-GROUP", "-"],
+  ["AP-J1-037", "Winterswijk", "AP-J1-166", "NLSKB-AP-GROUP", "-"],
+  ["AP-J1-038", "Winterswijk", "AP-J1-167", "NLSKB-AP-GROUP", "-"],
+  ["AP-J1-039", "Winterswijk", "AP-J1-168", "NLSKB-AP-GROUP", "-"],
+  ["AP-J1-040", "Winterswijk", "AP-J1-169", "NLSKB-AP-GROUP", "-"],
+  ["AP-J1-041", "Winterswijk", "AP-J1-170", "NLSKB-AP-GROUP", "-"],
+  ["AP-J1-042", "Winterswijk", "AP-J1-171", "NLSKB-AP-GROUP", "-"],
+  ["AP-J1-043", "Winterswijk", "AP-J1-172", "NLSKB-AP-GROUP", "-"],
+  ["AP-J1-044", "Winterswijk", "AP-J1-173", "NLSKB-AP-GROUP", "-"],
+  ["AP-J1-045", "Winterswijk", "AP-J1-174", "NLSKB-AP-GROUP", "-"],
+  ["AP-J1-046", "Winterswijk", "AP-J1-175", "NLSKB-AP-GROUP", "-"],
+  ["AP-J1-047", "Winterswijk", "AP-J1-176", "NLSKB-AP-GROUP", "-"],
+  ["AP-J2-069", "Winterswijk", "AP-J2-177", "NLSKB-AP-GROUP", "-"],
+  ["AP-J2-070", "Winterswijk", "AP-J2-178", "NLSKB-AP-GROUP", "-"],
+  ["AP-J2-071", "Winterswijk", "AP-J2-179", "NLSKB-AP-GROUP", "-"],
+  ["AP-J2-072", "Winterswijk", "AP-J2-180", "NLSKB-AP-GROUP", "-"],
+  ["AP-J2-447", "Winterswijk", "AP-J2-181", "NLSKB-AP-GROUP", "-"],
+  ["AP-J2-448", "Winterswijk", "AP-J2-182", "NLSKB-AP-GROUP", "-"],
+  ["AP-K0-073", "Winterswijk", "AP-K0-183", "NLSKB-AP-GROUP", "-"],
+  ["AP-K0-074", "Winterswijk", "AP-K0-184", "NLSKB-AP-GROUP", "-"],
+  ["AP-K0-075", "Winterswijk", "AP-K0-185", "NLSKB-AP-GROUP", "-"],
+  ["AP-K0-076", "Winterswijk", "AP-K0-186", "NLSKB-AP-GROUP", "-"],
+  ["AP-K0-077", "Winterswijk", "AP-K0-187", "NLSKB-AP-GROUP", "-"],
+  ["AP-K0-078", "Winterswijk", "AP-K0-188", "NLSKB-AP-GROUP", "-"],
+  ["AP-K0-079", "Winterswijk", "AP-K0-189", "NLSKB-AP-GROUP", "-"],
+  ["AP-K0-080", "Winterswijk", "AP-K0-190", "NLSKB-AP-GROUP", "-"],
+  ["AP-K0-081", "Winterswijk", "AP-K0-191", "NLSKB-AP-GROUP", "-"],
+  ["AP-K0-082", "Winterswijk", "AP-K0-192", "NLSKB-AP-GROUP", "-"],
+  ["AP-K0-083", "Winterswijk", "AP-K0-193", "NLSKB-AP-GROUP", "-"],
+  ["AP-K0-084", "Winterswijk", "AP-K0-194", "NLSKB-AP-GROUP", "-"],
+  ["AP-K0-085", "Winterswijk", "AP-K0-195", "NLSKB-AP-GROUP", "-"],
+  ["AP-K0-086", "Winterswijk", "AP-K0-196", "NLSKB-AP-GROUP", "-"],
+  ["AP-K0-087", "Winterswijk", "AP-K0-197", "NLSKB-AP-GROUP", "-"],
+  ["AP-K0-088", "Winterswijk", "AP-K0-198", "NLSKB-AP-GROUP", "-"],
+  ["AP-K1-234", "Winterswijk", "AP-K1-199", "NLSKB-AP-GROUP", "-"],
+  ["AP-K1-235", "Winterswijk", "AP-K1-200", "NLSKB-AP-GROUP", "-"],
+  ["AP-K1-236", "Winterswijk", "AP-K1-201", "NLSKB-AP-GROUP", "-"],
+  ["AP-K1-237", "Winterswijk", "AP-K1-202", "NLSKB-AP-GROUP", "-"],
+  ["AP-K1-238", "Winterswijk", "AP-K1-203", "NLSKB-AP-GROUP", "-"],
+  ["AP-O0-375", "Winterswijk", "AP-O0-204", "NLSKB-AP-GROUP", "-"],
+  ["AP-O0-376", "Winterswijk", "AP-O0-205", "NLSKB-AP-GROUP", "-"],
+  ["AP-O0-444", "Winterswijk", "AP-O0-206", "NLSKB-AP-GROUP", "-"],
+  ["AP-O0-445", "Winterswijk", "AP-O0-207", "NLSKB-AP-GROUP", "-"],
+  ["AP-OS0-406", "Winterswijk", "AP-O0-208", "NLSKB-AP-GROUP", "-"],
+  ["AP-OS0-407", "Winterswijk", "AP-O0-209", "NLSKB-AP-GROUP", "-"],
+  ["AP-OS0-408", "Winterswijk", "AP-O0-210", "NLSKB-AP-GROUP", "-"],
+  ["AP-OS0-409", "Winterswijk", "AP-O0-211", "NLSKB-AP-GROUP", "-"],
+  ["AP-O1-328", "Winterswijk", "AP-O1-212", "NLSKB-AP-GROUP", "-"],
+  ["AP-O1-329", "Winterswijk", "AP-O1-213", "NLSKB-AP-GROUP", "-"],
+  ["AP-O1-330", "Winterswijk", "AP-O1-214", "NLSKB-AP-GROUP", "-"],
+  ["AP-O1-331", "Winterswijk", "AP-O1-215", "NLSKB-AP-GROUP", "-"],
+  ["AP-O1-332", "Winterswijk", "AP-O1-216", "NLSKB-AP-GROUP", "-"],
+  ["AP-O1-333", "Winterswijk", "AP-O1-217", "NLSKB-AP-GROUP", "-"],
+  ["AP-O1-486", "Winterswijk", "AP-O1-218", "NLSKB-AP-GROUP", "-"],
+  ["AP-O1-487", "Winterswijk", "AP-O1-219", "NLSKB-AP-GROUP", "-"],
+  ["AP-O1-488", "Winterswijk", "AP-O1-220", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-214", "Winterswijk", "AP-P0-221", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-215", "Winterswijk", "AP-P0-222", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-216", "Winterswijk", "AP-P0-223", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-217", "Winterswijk", "AP-P0-224", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-218", "Winterswijk", "AP-P0-225", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-219", "Winterswijk", "AP-P0-226", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-220", "Winterswijk", "AP-P0-227", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-221", "Winterswijk", "AP-P0-228", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-222", "Winterswijk", "AP-P0-229", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-223", "Winterswijk", "AP-P0-230", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-224", "Winterswijk", "AP-P0-231", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-225", "Winterswijk", "AP-P0-232", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-226", "Winterswijk", "AP-P0-233", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-227", "Winterswijk", "AP-P0-234", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-228", "Winterswijk", "AP-P0-235", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-229", "Winterswijk", "AP-P0-236", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-230", "Winterswijk", "AP-P0-237", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-231", "Winterswijk", "AP-P0-238", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-232", "Winterswijk", "AP-P0-239", "NLSKB-AP-GROUP", "-"],
+  ["AP-P0-233", "Winterswijk", "AP-P0-240", "NLSKB-AP-GROUP", "-"],
+  ["AP-P1-259", "Winterswijk", "AP-P1-241", "NLSKB-AP-GROUP", "-"],
+  ["AP-P1-260", "Winterswijk", "AP-P1-242", "NLSKB-AP-GROUP", "-"],
+  ["AP-P1-261", "Winterswijk", "AP-P1-243", "NLSKB-AP-GROUP", "-"],
+  ["AP-P1-262", "Winterswijk", "AP-P1-244", "NLSKB-AP-GROUP", "-"],
+  ["AP-P1-263", "Winterswijk", "AP-P1-245", "NLSKB-AP-GROUP", "-"],
+  ["AP-P1-264", "Winterswijk", "AP-P1-246", "NLSKB-AP-GROUP", "-"],
+  ["AP-P1-265", "Winterswijk", "AP-P1-247", "NLSKB-AP-GROUP", "-"],
+  ["AP-P1-266", "Winterswijk", "AP-P1-248", "NLSKB-AP-GROUP", "-"],
+  ["AP-P1-267", "Winterswijk", "AP-P1-249", "NLSKB-AP-GROUP", "-"],
+  ["AP-P1-268", "Winterswijk", "AP-P1-250", "NLSKB-AP-GROUP", "-"],
+  ["AP-P1-269", "Winterswijk", "AP-P1-251", "NLSKB-AP-GROUP", "-"],
+  ["AP-PX-210", "Winterswijk", "AP-PX-252", "NLSKB-AP-GROUP", "\"X\" moet verdieping zijn nu onbekend"],
+  ["AP-PX-211", "Winterswijk", "AP-PX-253", "NLSKB-AP-GROUP", "\"X\" moet verdieping zijn nu onbekend"],
+  ["AP-PX-212", "Winterswijk", "AP-PX-254", "NLSKB-AP-GROUP", "\"X\" moet verdieping zijn nu onbekend"],
+  ["AP-PX-213", "Winterswijk", "AP-PX-255", "NLSKB-AP-GROUP", "\"X\" moet verdieping zijn nu onbekend"],
+  ["AP-Q0-190", "Winterswijk", "AP-Q0-256", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q0-191", "Winterswijk", "AP-Q0-257", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q0-196", "Winterswijk", "AP-Q0-258", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q0-197", "Winterswijk", "AP-Q0-259", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q0-199", "Winterswijk", "AP-Q0-260", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q0-200", "Winterswijk", "AP-Q0-261", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q0-201", "Winterswijk", "AP-Q0-262", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q0-202", "Winterswijk", "AP-Q0-263", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q0-203", "Winterswijk", "AP-Q0-264", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q0-204", "Winterswijk", "AP-Q0-265", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q0-460", "Winterswijk", "AP-Q0-266", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q0-461", "Winterswijk", "AP-Q0-267", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q0-462", "Winterswijk", "AP-Q0-268", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q0-464", "Winterswijk", "AP-Q0-269", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q0-465", "Winterswijk", "AP-Q0-270", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q1-001", "Winterswijk", "AP-Q1-271", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q1-002", "Winterswijk", "AP-Q1-272", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q1-003", "Winterswijk", "AP-Q1-273", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q1-004", "Winterswijk", "AP-Q1-274", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q1-005", "Winterswijk", "AP-Q1-275", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q1-006", "Winterswijk", "AP-Q1-276", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q1-205", "Winterswijk", "AP-Q1-277", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q1-206", "Winterswijk", "AP-Q1-278", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q1-207", "Winterswijk", "AP-Q1-279", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q1-208", "Winterswijk", "AP-Q1-280", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q1-209", "Winterswijk", "AP-Q1-281", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q1-388", "Winterswijk", "AP-Q1-282", "NLSKB-AP-GROUP", "-"],
+  ["AP-Q1-389", "Winterswijk", "AP-Q1-283", "NLSKB-AP-GROUP", "-"],
+  ["AP-QX-181", "Winterswijk", "AP-QX-284", "NLSKB-AP-GROUP", "\"X\" moet verdieping zijn nu onbekend"],
+  ["AP-QX-182", "Winterswijk", "AP-QX-285", "NLSKB-AP-GROUP", "\"X\" moet verdieping zijn nu onbekend"],
+  ["AP-QX-183", "Winterswijk", "AP-QX-286", "NLSKB-AP-GROUP", "\"X\" moet verdieping zijn nu onbekend"],
+  ["AP-QX-184", "Winterswijk", "AP-QX-287", "NLSKB-AP-GROUP", "\"X\" moet verdieping zijn nu onbekend"],
+  ["AP-QX-186", "Winterswijk", "AP-QX-288", "NLSKB-AP-GROUP", "\"X\" moet verdieping zijn nu onbekend"],
+  ["AP-QX-187", "Winterswijk", "AP-QX-289", "NLSKB-AP-GROUP", "\"X\" moet verdieping zijn nu onbekend"],
+  ["AP-QX-188", "Winterswijk", "AP-QX-290", "NLSKB-AP-GROUP", "\"X\" moet verdieping zijn nu onbekend"],
+  ["AP-QX-189", "Winterswijk", "AP-QX-291", "NLSKB-AP-GROUP", "\"X\" moet verdieping zijn nu onbekend"],
+  ["AP-QX-490", "Winterswijk", "AP-QX-292", "NLSKB-AP-GROUP", "\"X\" moet verdieping zijn nu onbekend"],
+  ["AP-QX-491", "Winterswijk", "AP-QX-293", "NLSKB-AP-GROUP", "\"X\" moet verdieping zijn nu onbekend"],
+  ["AP-R0-145", "Winterswijk", "AP-R0-294", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-147", "Winterswijk", "AP-R0-295", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-148", "Winterswijk", "AP-R0-296", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-162", "Winterswijk", "AP-R0-297", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-163", "Winterswijk", "AP-R0-298", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-164", "Winterswijk", "AP-R0-299", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-165", "Winterswijk", "AP-R0-300", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-166", "Winterswijk", "AP-R0-301", "NLSKB-AP-GROUP", "-"],
+  ["AP-r0-381", "Winterswijk", "AP-R0-302", "NLSKB-AP-GROUP", "-"],
+  ["AP-r0-382", "Winterswijk", "AP-R0-303", "NLSKB-AP-GROUP", "-"],
+  ["AP-r0-383", "Winterswijk", "AP-R0-304", "NLSKB-AP-GROUP", "-"],
+  ["AP-r0-384", "Winterswijk", "AP-R0-305", "NLSKB-AP-GROUP", "-"],
+  ["AP-r0-385", "Winterswijk", "AP-R0-306", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-411", "Winterswijk", "AP-R0-307", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-413", "Winterswijk", "AP-R0-308", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-414", "Winterswijk", "AP-R0-309", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-420", "Winterswijk", "AP-R0-310", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-421", "Winterswijk", "AP-R0-311", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-422", "Winterswijk", "AP-R0-312", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-423", "Winterswijk", "AP-R0-313", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-424", "Winterswijk", "AP-R0-314", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-425", "Winterswijk", "AP-R0-315", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-426", "Winterswijk", "AP-R0-316", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-427", "Winterswijk", "AP-R0-317", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-428", "Winterswijk", "AP-R0-318", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-611", "Winterswijk", "AP-R0-319", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-614", "Winterswijk", "AP-R0-320", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-615", "Winterswijk", "AP-R0-321", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-616", "Winterswijk", "AP-R0-322", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-617", "Winterswijk", "AP-R0-323", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-618", "Winterswijk", "AP-R0-324", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-619", "Winterswijk", "AP-R0-325", "NLSKB-AP-GROUP", "-"],
+  ["AP-R0-620", "Winterswijk", "AP-R0-326", "NLSKB-AP-GROUP", "-"],
+  ["AP-R1-170", "Winterswijk", "AP-R1-327", "NLSKB-AP-GROUP", "-"],
+  ["AP-R1-171", "Winterswijk", "AP-R1-328", "NLSKB-AP-GROUP", "-"],
+  ["AP-R1-172", "Winterswijk", "AP-R1-329", "NLSKB-AP-GROUP", "-"],
+  ["AP-R1-173", "Winterswijk", "AP-R1-330", "NLSKB-AP-GROUP", "-"],
+  ["AP-R1-174", "Winterswijk", "AP-R1-331", "NLSKB-AP-GROUP", "-"],
+  ["AP-R1-177", "Winterswijk", "AP-R1-332", "NLSKB-AP-GROUP", "-"],
+  ["AP-R1-178", "Winterswijk", "AP-R1-333", "NLSKB-AP-GROUP", "-"],
+  ["AP-R1-179", "Winterswijk", "AP-R1-334", "NLSKB-AP-GROUP", "-"],
+  ["AP-R1-434", "Winterswijk", "AP-R1-335", "NLSKB-AP-GROUP", "-"],
+  ["AP-R1-473", "Winterswijk", "AP-R1-336", "NLSKB-AP-GROUP", "-"],
+  ["AP-R1-474", "Winterswijk", "AP-R1-337", "NLSKB-AP-GROUP", "-"],
+  ["AP-R1-475", "Winterswijk", "AP-R1-338", "NLSKB-AP-GROUP", "-"],
+  ["AP-R1-476", "Winterswijk", "AP-R1-339", "NLSKB-AP-GROUP", "-"],
+  ["AP-R1-477", "Winterswijk", "AP-R1-340", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-106", "Winterswijk", "AP-S0-341", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-107", "Winterswijk", "AP-S0-342", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-108", "Winterswijk", "AP-S0-343", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-420", "Winterswijk", "AP-S0-344", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-421", "Winterswijk", "AP-S0-345", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-422", "Winterswijk", "AP-S0-346", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-423", "Winterswijk", "AP-S0-347", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-424", "Winterswijk", "AP-S0-348", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-425", "Winterswijk", "AP-S0-349", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-426", "Winterswijk", "AP-S0-350", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-427", "Winterswijk", "AP-S0-351", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-428", "Winterswijk", "AP-S0-352", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-429", "Winterswijk", "AP-S0-353", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-430", "Winterswijk", "AP-S0-354", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-431", "Winterswijk", "AP-S0-355", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-432", "Winterswijk", "AP-S0-356", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-452", "Winterswijk", "AP-S0-357", "NLSKB-AP-BD-S", "-"],
+  ["AP-S0-453", "Winterswijk", "AP-S0-358", "NLSKB-AP-BD-S", "-"],
+  ["AP-S0-454", "Winterswijk", "AP-S0-359", "NLSKB-AP-BD-S", "-"],
+  ["AP-S0-455", "Winterswijk", "AP-S0-360", "NLSKB-AP-BD-S", "-"],
+  ["AP-S0-456", "Winterswijk", "AP-S0-361", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-457", "Winterswijk", "AP-S0-362", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-458", "Winterswijk", "AP-S0-363", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-459", "Winterswijk", "AP-S0-364", "NLSKB-AP-GROUP", "-"],
+  ["AP-S0-483", "Winterswijk", "AP-S0-365", "NLSKB-AP-BD-S", "-"],
+  ["AP-S1-089", "Winterswijk", "AP-S1-366", "NLSKB-AP-BD-S", "-"],
+  ["AP-S1-090", "Winterswijk", "AP-S1-367", "NLSKB-AP-GROUP", "-"],
+  ["AP-S1-092", "Winterswijk", "AP-S1-368", "NLSKB-AP-GROUP", "-"],
+  ["AP-S1-093", "Winterswijk", "AP-S1-369", "NLSKB-AP-GROUP", "-"],
+  ["AP-S1-623", "Winterswijk", "AP-S1-370", "NLSKB-AP-GROUP", "-"],
+  ["AP-S1-624", "Winterswijk", "AP-S1-371", "NLSKB-AP-GROUP", "-"],
+  ["AP-S1-625", "Winterswijk", "AP-S1-372", "NLSKB-AP-GROUP", "-"],
+  ["AP-S1-626", "Winterswijk", "AP-S1-373", "NLSKB-AP-GROUP", "-"],
+  ["AP-S1-627", "Winterswijk", "AP-S1-374", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-181", "Winterswijk", "AP-SR-375", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-355", "Winterswijk", "AP-SR-376", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-356", "Winterswijk", "AP-SR-377", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-357", "Winterswijk", "AP-SR-378", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-358", "Winterswijk", "AP-SR-379", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-359", "Winterswijk", "AP-SR-380", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-363", "Winterswijk", "AP-SR-381", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-364", "Winterswijk", "AP-SR-382", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-435", "Winterswijk", "AP-SR-383", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-436", "Winterswijk", "AP-SR-384", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-437", "Winterswijk", "AP-SR-385", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-438", "Winterswijk", "AP-SR-386", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-439", "Winterswijk", "AP-SR-387", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-440", "Winterswijk", "AP-SR-388", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-441", "Winterswijk", "AP-SR-389", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-442", "Winterswijk", "AP-SR-390", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-443", "Winterswijk", "AP-SR-391", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-444", "Winterswijk", "AP-SR-392", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-612", "Winterswijk", "AP-SR-393", "NLSKB-AP-GROUP", "-"],
+  ["AP-SR-613", "Winterswijk", "AP-SR-394", "NLSKB-AP-GROUP", "-"],
+  ["AP-SER-001", "Winterswijk", "AP-TR-395", "NLSKB-AP-GROUP", "-"],
+  ["AP-SER-002", "Winterswijk", "AP-TR-396", "NLSKB-AP-GROUP", "-"],
+  ["AP-SER-004", "Winterswijk", "AP-TR-397", "NLSKB-AP-GROUP", "-"],
+  ["AP-SER-005", "Winterswijk", "AP-TR-398", "NLSKB-AP-GROUP", "-"],
+  ["AP-SER-006", "Winterswijk", "AP-TR-399", "NLSKB-AP-GROUP", "-"],
+  ["AP-SER-007", "Winterswijk", "AP-TR-400", "NLSKB-AP-GROUP", "-"],
+  ["AP-SER-008", "Winterswijk", "AP-TR-401", "NLSKB-AP-GROUP", "-"],
+  ["AP-SER-009", "Winterswijk", "AP-TR-402", "NLSKB-AP-GROUP", "-"],
+  ["AP-SER-010", "Winterswijk", "AP-TR-403", "NLSKB-AP-GROUP", "-"],
+  ["AP-SER-011", "Winterswijk", "AP-TR-404", "NLSKB-AP-GROUP", "-"],
+  ["AP-SER-012", "Winterswijk", "AP-TR-405", "NLSKB-AP-GROUP", "-"],
+  ["AP-V0-239", "Winterswijk", "AP-V0-406", "NLSKB-AP-GROUP", "-"],
+  ["AP-V0-240", "Winterswijk", "AP-V0-407", "NLSKB-AP-GROUP", "-"],
+  ["AP-V0-241", "Winterswijk", "AP-V0-408", "NLSKB-AP-GROUP", "-"],
+  ["AP-V0-242", "Winterswijk", "AP-V0-409", "NLSKB-AP-GROUP", "-"],
+  ["AP-V0-243", "Winterswijk", "AP-V0-410", "NLSKB-AP-GROUP", "-"],
+  ["AP-V0-244", "Winterswijk", "AP-V0-411", "NLSKB-AP-GROUP", "-"],
+  ["AP-V0-245", "Winterswijk", "AP-V0-412", "NLSKB-AP-GROUP", "-"],
+  ["AP-W0-279", "Winterswijk", "AP-W0-413", "NLSKB-AP-GROUP", "-"],
+  ["AP-W0-280", "Winterswijk", "AP-W0-414", "NLSKB-AP-GROUP", "-"],
+  ["AP-W0-281", "Winterswijk", "AP-W0-415", "NLSKB-AP-GROUP", "-"],
+  ["AP-W0-282", "Winterswijk", "AP-W0-416", "NLSKB-AP-GROUP", "-"],
+  ["AP-W0-283", "Winterswijk", "AP-W0-417", "NLSKB-AP-GROUP", "-"],
+  ["AP-W0-284", "Winterswijk", "AP-W0-418", "NLSKB-AP-GROUP", "-"],
+  ["AP-W0-285", "Winterswijk", "AP-W0-419", "NLSKB-AP-GROUP", "-"],
+  ["AP-W0-478", "Winterswijk", "AP-W0-420", "NLSKB-AP-GROUP", "-"],
+  ["AP-W1-270", "Winterswijk", "AP-W1-421", "NLSKB-AP-GROUP", "-"],
+  ["AP-W1-272", "Winterswijk", "AP-W1-422", "NLSKB-AP-GROUP", "-"],
+  ["AP-W1-273", "Winterswijk", "AP-W1-423", "NLSKB-AP-GROUP", "-"],
+  ["AP-W1-274", "Winterswijk", "AP-W1-424", "NLSKB-AP-GROUP", "-"],
+  ["AP-W1-275", "Winterswijk", "AP-W1-425", "NLSKB-AP-GROUP", "-"],
+  ["AP-W1-276", "Winterswijk", "AP-W1-426", "NLSKB-AP-GROUP", "-"],
+  ["AP-W1-277", "Winterswijk", "AP-W1-427", "NLSKB-AP-GROUP", "-"],
+  ["AP-W1-479", "Winterswijk", "AP-W1-428", "NLSKB-AP-GROUP", "-"],
+["RAP-Neede-1", "Neede", "AP-00-001", "", "-"],
+["RAP-Aalten-2", "Aalten", "AP-00-001", "", "-"],
+["RAP-Lichtenvoorde-1", "Lichtenvoorde", "AP-00-001", "", "-"],
+["RAP-Groenlo-2", "Groenlo", "AP-00-001", "", "-"],
+["RAP-Dinxperlo-1", "Dinxperlo", "AP-00-001", "", "-"],
+["RAP-BORCULO-2", "Borculo", "AP-00-001", "", "-"],
+["RAP-RAD-SZ", "onbekend", "AP-00-001", "", "-"],
+["RAP-Radiologen-02", "onbekend", "AP-00-001", "", "-"],
+["RAP-Radiologen-03", "onbekend", "AP-00-001", "", "-"],
+["RAP-Radiologen-04", "onbekend", "AP-00-001", "", "-"],
+["RAP-Radiologen-05", "onbekend", "AP-00-001", "", "-"],
+["RAP-Radiologen-06", "onbekend", "AP-00-001", "", "-"],
+["RAP-Radiologen-07", "onbekend", "AP-00-001", "", "-"],
+["RAP-Radiologen-09", "onbekend", "AP-00-001", "", "-"],
+["RAP-Radiologen-10", "onbekend", "AP-00-001", "", "-"],
+["RAP-Radiologen-11", "onbekend", "AP-00-001", "", "-"],
+["RAP-Radiologen-12", "onbekend", "AP-00-001", "", "-"],
+["RAP-Reserver-01", "onbekend", "AP-00-001", "", "-"],
+["RAP-TD-1", "onbekend", "AP-00-001", "", "-"],
+["RAP-ZGT-1", "onbekend", "AP-00-001", "", "-"],
+["RAP-Ruurlo-3", "Ruurlo", "AP-00-002", "", "-"]
+
+];
+    
+    // Wacht tot het document volledig is geladen
+    document.addEventListener('DOMContentLoaded', function() {
+      // Functie om tabel te vullen
+      function populateTable(data) {
+        const tableBody = document.getElementById('tableBody');
+        
+        // Maak de tabel leeg
+        tableBody.innerHTML = '';
+        
+        // Voeg alle rijen toe aan de tabel
+        data.forEach(row => {
+          const tr = document.createElement('tr');
+          
+          row.forEach(cell => {
+            const td = document.createElement('td');
+            td.textContent = cell;
+            tr.appendChild(td);
+          });
+          
+          tableBody.appendChild(tr);
+        });
+        
+        document.getElementById('resultsInfo').textContent = `Toont ${data.length} access points`;
+      }
+      
+      // Functie om te filteren op zoekterm
+      function filterBySearch(searchTerm) {
+        if (!searchTerm) {
+          return apData;
+        }
+        
+        searchTerm = searchTerm.toLowerCase();
+        return apData.filter(row => {
+          return row.some(cell => cell.toLowerCase().includes(searchTerm));
+        });
+      }
+      
+      // Algemene filterfunctie
+      function filterData(filterType, filterValue) {
+        if (!filterValue) {
+          return apData;
+        }
+        
+        switch (filterType) {
+          case 'name':
+            return apData.filter(row => row[0].startsWith(filterValue));
+          case 'location':
+            return apData.filter(row => row[1] === filterValue);
+          default:
+            return apData;
+        }
+      }
+      
+      // Event listeners
+      document.getElementById('searchInput').addEventListener('input', function(e) {
+        const searchTerm = e.target.value;
+        const filteredData = filterBySearch(searchTerm);
+        populateTable(filteredData);
+        
+        // Reset active buttons als we zoeken
+        document.querySelectorAll('.filter-button').forEach(btn => {
+          btn.classList.remove('active');
+        });
+      });
+      
+      document.querySelectorAll('.filter-button').forEach(button => {
+        button.addEventListener('click', function() {
+          const filterType = this.getAttribute('data-filter');
+          const filterValue = this.getAttribute('data-value');
+          
+          // Toggle active state
+          if (this.classList.contains('active')) {
+            this.classList.remove('active');
+            populateTable(apData);
+            document.getElementById('searchInput').value = '';
+          } else {
+            // Reset andere buttons
+            document.querySelectorAll('.filter-button').forEach(btn => {
+              btn.classList.remove('active');
+            });
+            
+            this.classList.add('active');
+            
+            const filteredData = filterData(filterType, filterValue);
+            populateTable(filteredData);
+            document.getElementById('searchInput').value = '';
+          }
+        });
+      });
+      
+      // Initialiseer tabel
+      populateTable(apData);
+    });
+  </script>
+</body>
+</html>
