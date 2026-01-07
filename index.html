@@ -118,10 +118,87 @@
   align-items: center;
   margin-bottom: 10px;
 }
+    /* Password modal styles */
+.modal {
+  display: flex;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal-title {
+  margin-top: 0;
+  color: #333;
+}
+
+.password-input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.submit-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+.error-message {
+  color: #d9534f;
+  margin-top: 10px;
+  font-size: 14px;
+  display: none;
+}
+
+.app-content {
+  display: none;
+}
+
 
   </style>
 </head>
 <body>
+
+  <!-- Password Modal -->
+<div id="passwordModal" class="modal">
+  <div class="modal-content">
+    <h2 class="modal-title">Toegang tot AP Filter Tool</h2>
+    <p>Voer het wachtwoord in om toegang te krijgen tot de tool.</p>
+    <input type="password" id="passwordInput" class="password-input" placeholder="Wachtwoord">
+    <p id="errorMessage" class="error-message">Onjuist wachtwoord. Probeer het opnieuw.</p>
+    <button id="submitPassword" class="submit-button">Inloggen</button>
+  </div>
+</div>
+<div id="appContent" class="app-content">
+  <!-- Je bestaande container div en inhoud hier -->
+
   <div class="container">
     <div class="header-container">
   <h1>AP Filter Tool</h1>
@@ -182,6 +259,52 @@
   </div>
 
   <script>
+    // Wachtwoord verificatie
+const correctPassword = "SKBncubed2025";
+const passwordModal = document.getElementById("passwordModal");
+const appContent = document.getElementById("appContent");
+const passwordInput = document.getElementById("passwordInput");
+const submitButton = document.getElementById("submitPassword");
+const errorMessage = document.getElementById("errorMessage");
+
+// Check of wachtwoord al eerder is geverifieerd in deze sessie
+function checkStoredAuth() {
+  const isAuthenticated = sessionStorage.getItem("apToolAuthenticated");
+  if (isAuthenticated === "true") {
+    passwordModal.style.display = "none";
+    appContent.style.display = "block";
+    initializeApp();
+  }
+}
+
+// Controleer wachtwoord bij laden
+checkStoredAuth();
+
+// Wachtwoord submit handler
+submitButton.addEventListener("click", verifyPassword);
+passwordInput.addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    verifyPassword();
+  }
+});
+
+function verifyPassword() {
+  const enteredPassword = passwordInput.value;
+  
+  if (enteredPassword === correctPassword) {
+    // Wachtwoord correct
+    passwordModal.style.display = "none";
+    appContent.style.display = "block";
+    sessionStorage.setItem("apToolAuthenticated", "true");
+    initializeApp();
+  } else {
+    // Wachtwoord onjuist
+    errorMessage.style.display = "block";
+    passwordInput.value = "";
+    passwordInput.focus();
+  }
+}
+
 
     const apData = [
   ["AP-RUURLO-1", "Ruurlo", "AP-00-001", "NLSKB-AP-PP", "-"],
@@ -647,7 +770,12 @@
 ["RAP-Ruurlo-3", "Ruurlo", "AP-00-002", "", "-"]
 
 ];
-    
+   // Initialiseer de app nadat het wachtwoord is geverifieerd
+function initializeApp() {
+  fillTable(apData);
+  // Voeg hier andere initialisatiecode toe, zoals event listeners voor zoekveld
+}
+ 
     // Wacht tot het document volledig is geladen
     document.addEventListener('DOMContentLoaded', function() {
       // Functie om tabel te vullen
